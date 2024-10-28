@@ -7,6 +7,6 @@ interface Cliente {
     celular : string
 }
 
-const clientes : Cliente [] = []
+let clientes : Cliente [] = []
 
 export {Cliente, clientes}

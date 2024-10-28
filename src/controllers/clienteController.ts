@@ -35,10 +35,11 @@ export const deleted = async (request: Request, response: Response) => {
     const clienteIndice = clientes.findIndex(c => c.id === id)
     if(clienteIndice < 0){
         await response.status(404).send({"Error": "404 : Recurso não localizado."})
+        return;
     }
-    else{
-        clientes.slice(clienteIndice,1)
+        console.log(clienteIndice)
+        clientes.splice(clienteIndice,1)
+        console.log(clientes)
         await response.send({"message": "OK - Recurso deletado com sucesso!"})
-    }
-    response.send({"message": "Metodo HTTP: método delete."})
+    
 }
