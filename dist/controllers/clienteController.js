@@ -9,48 +9,133 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleted = exports.update = exports.researchAll = exports.create = void 0;
-const clienteModel_1 = require("../models/clienteModel");
-const uuid_1 = require("uuid");
+exports.deleted = exports.update = exports.researchId = exports.researchAll = exports.create = void 0;
+const client_1 = require("@prisma/client");
+const TratamentoErros_1 = require("../utils/TratamentoErros");
+const prisma = new client_1.PrismaClient();
+//********************************************************************************************* */
 const create = (request, response) => __awaiter(void 0, void 0, void 0, function* () {
-    let cliente = request.body;
-    cliente.id = (0, uuid_1.v4)();
-    clienteModel_1.clientes.push(cliente);
-    console.log(cliente);
-    response.status(201).send({ "message": "Metodo HTTP: método create." });
+    const { nome, email, celular } = request.body;
+    try {
+        const result = yield prisma.cliente.create({
+            data: {
+                nome: nome,
+                email: email,
+                celular: celular
+            }
+        });
+        response.status(201).send({
+            "message": "Metodo HTTP: método create."
+        });
+    }
+    catch (error) {
+        if (error instanceof client_1.Prisma.PrismaClientKnownRequestError) {
+            console.log(error.code);
+            response.status(409).json({
+                error: {
+                    message: TratamentoErros_1.ErrorRequest.errorRequest(error.code),
+                    field: error.meta
+                }
+            });
+        }
+    }
 });
 exports.create = create;
+//********************************************************************************************* */
 const researchAll = (request, response) => __awaiter(void 0, void 0, void 0, function* () {
-    response.status(200).send(clienteModel_1.clientes);
-    //response.send({"message": "Metodo HTTP: método researchAll."})
+    try {
+        const result = yield prisma.cliente.findMany({});
+        response.status(200).json(result);
+        console.log(result);
+    }
+    catch (error) {
+        if (error instanceof client_1.Prisma.PrismaClientKnownRequestError) {
+            console.log(error.code);
+            response.status(409).json({
+                error: {
+                    message: TratamentoErros_1.ErrorRequest.errorRequest(error.code),
+                    field: error.meta
+                }
+            });
+        }
+    }
 });
 exports.researchAll = researchAll;
+//********************************************************************************************* */
+const researchId = (request, response) => __awaiter(void 0, void 0, void 0, function* () {
+    const email = request.params.email;
+    try {
+        const result = yield prisma.cliente.findUnique({
+            where: {
+                email: email
+            }
+        });
+        console.log(result);
+        response.status(200).json(result);
+    }
+    catch (error) {
+        if (error instanceof client_1.Prisma.PrismaClientKnownRequestError) {
+            console.log(error.code);
+            response.status(409).json({
+                error: {
+                    message: TratamentoErros_1.ErrorRequest.errorRequest(error.code),
+                    field: error.meta
+                }
+            });
+        }
+    }
+});
+exports.researchId = researchId;
+//********************************************************************************************* */
 const update = (request, response) => __awaiter(void 0, void 0, void 0, function* () {
-    const { id } = request.params;
+    const id = request.params.id;
     const { nome, email, celular } = request.body;
-    const clienteIndice = clienteModel_1.clientes.findIndex(c => c.id === id);
-    if (clienteIndice < 0) {
-        yield response.status(404).send({ "Error": "404 : Recurso não localizado." });
+    try {
+        const result = yield prisma.cliente.update({
+            where: { id: Number(id) },
+            data: {
+                nome: nome,
+                email: email,
+                celular: celular
+            }
+        });
+        console.log(result);
+        response.status(200).json(result);
     }
-    else if (!nome || !email) {
-        yield response.status(400).send({ "Error": "400 : Campos incompletos" });
-    }
-    else {
-        clienteModel_1.clientes[clienteIndice] = { id, nome, email, celular };
-        yield response.send({ "message": "OK - Recurso atualizado com sucesso!" });
+    catch (error) {
+        if (error instanceof client_1.Prisma.PrismaClientKnownRequestError) {
+            console.log(error.code);
+            response.status(409).json({
+                error: {
+                    message: TratamentoErros_1.ErrorRequest.errorRequest(error.code),
+                    field: error.meta
+                }
+            });
+        }
     }
 });
 exports.update = update;
+//********************************************************************************************* */
 const deleted = (request, response) => __awaiter(void 0, void 0, void 0, function* () {
-    const { id } = request.params;
-    const clienteIndice = clienteModel_1.clientes.findIndex(c => c.id === id);
-    if (clienteIndice < 0) {
-        yield response.status(404).send({ "Error": "404 : Recurso não localizado." });
-        return;
+    const id = request.params.id;
+    const { nome, email, celular } = request.body;
+    try {
+        const result = yield prisma.cliente.delete({
+            where: { id: Number(id) },
+        });
+        console.log(result);
+        response.status(200).json(result);
     }
-    console.log(clienteIndice);
-    clienteModel_1.clientes.splice(clienteIndice, 1);
-    console.log(clienteModel_1.clientes);
-    yield response.send({ "message": "OK - Recurso deletado com sucesso!" });
+    catch (error) {
+        if (error instanceof client_1.Prisma.PrismaClientKnownRequestError) {
+            console.log(error.code);
+            response.status(409).json({
+                error: {
+                    message: TratamentoErros_1.ErrorRequest.errorRequest(error.code),
+                    field: error.meta
+                }
+            });
+        }
+    }
 });
 exports.deleted = deleted;
