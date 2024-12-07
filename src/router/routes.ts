@@ -1,12 +1,11 @@
 import { Router } from 'express';
-import {create, researchId,researchAll,update,deleted } from '../controllers/clienteController'
+import { create, researchAll, update, deleted } from '../controllers/livroController'
 
 const router = Router()
 
-router.post('/cliente',create)
-router.get('/cliente',researchAll)
-router.get('/cliente/:email',researchId)
-router.put('/cliente/:id',update)
-router.delete('/cliente/:id',deleted)
+router.post('/livro', create)
+router.get('/livro', researchAll)
+router.put('/livro/:id', update)
+router.delete('/livro/:id', deleted)
 
 export default router

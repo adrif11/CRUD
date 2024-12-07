@@ -6,14 +6,15 @@ import { PrismaClient } from '@prisma/client';
 
 dotenv.config()
 const app = express()
-const PORTA = process.env.PORT
+const PORTA = 3000
 const prisma = new PrismaClient();
 
 app.use(express.json())
-app.use('/api',authRouters)
+app.use('/api', authRouters)
 
-app.listen(PORTA,() =>{
+app.listen(PORTA, () => {
     console.log(`Servidor executando na porta: ${PORTA}`)
 })
 
 
+//url: http://localhost:3000/api/livro
